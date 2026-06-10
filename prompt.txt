@@ -1,0 +1,14 @@
+Analyse ce ticket de caisse et extrais les informations suivantes en JSON :
+
+{
+    "type_document": "restaurant | supermarche | pharmacie | autre",
+    "fournisseur": "nom du commerce",
+    "date": "JJ/MM/AAAA",
+    "montant_ttc": 0.00,
+    "tva": 0.00,
+    "devise": "EUR",
+    "description": "courte description des achats",
+    "confiance": "haute | moyen | basse"
+}
+
+Retourne uniquement ce JSON, rien d'autre.
