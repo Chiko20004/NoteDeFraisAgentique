@@ -18,7 +18,6 @@ SCOPES = [
 class GoogleSheetsClient:
 
     def __init__(self):
-        # Chargement des credentials depuis le fichier JSON
         creds_path = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
         base_dir = os.path.dirname(os.path.abspath(__file__))
         creds_full_path = os.path.join(base_dir, creds_path)
@@ -28,16 +27,18 @@ class GoogleSheetsClient:
             scopes=SCOPES
         )
 
-        # Connexion à Google Sheets
         self.client = gspread.authorize(self.creds)
         self.sheet_id = os.getenv("GOOGLE_SHEET_ID")
         self.sheet = self.client.open_by_key(self.sheet_id).worksheet("Notes de frais")
-
-        # Connexion à Google Drive
         self.drive_service = build("drive", "v3", credentials=self.creds)
+        self.folder_id = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
 
     def upload_image_to_drive(self, image_bytes: bytes, filename: str, media_type: str) -> str:
-        file_metadata = {"name": filename}
+        file_metadata = {
+            "name": filename,
+            "parents": [self.folder_id]
+        }
+
         media = MediaIoBaseUpload(
             io.BytesIO(image_bytes),
             mimetype=media_type,
@@ -60,7 +61,6 @@ class GoogleSheetsClient:
         return f"https://drive.google.com/uc?id={file_id}"
 
     def append_expense(self, data: dict, image_url: str = None) -> None:
-        # ligne à ajouter dans le Sheet
         row = [
             datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             data.get("type_document", None),
@@ -75,22 +75,3 @@ class GoogleSheetsClient:
         ]
 
         self.sheet.append_row(row, value_input_option="USER_ENTERED")
-
-
-# Test 
-if __name__ == "__main__":
-    client = GoogleSheetsClient()
-
-    test_data = {
-        "type_document": "supermarche",
-        "fournisseur": "Test Market",
-        "date": "10/06/2026",
-        "montant_ttc": 42.50,
-        "tva": 3.50,
-        "devise": "EUR",
-        "description": "Test d'intégration Google Sheets",
-        "confiance": "haute"
-    }
-
-    client.append_expense(test_data)
-    print("Ligne ajoutée ")
