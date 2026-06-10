@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketMain</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TicketMain</h1>
+            <p>Analyse et enregistre tes notes de frais</p>
+        </div>
+
+        <div class="upload-section">
+            <form id="upload-form"
+                hx-post="/api/analyze"
+                hx-target="#form-container"
+                hx-encoding="multipart/form-data"
+                hx-indicator="#loader">
+
+                <div class="drop-zone" id="drop-zone">
+                    <input type="file" name="file" id="file-input" accept="image/jpeg,image/png,image/webp">
+                    <div class="drop-zone-text" id="drop-text">
+                        <span>Clique ou depose un ticket ici</span>
+                        <small>JPG, PNG, WEBP — max 10MB</small>
+                    </div>
+                    <img id="preview" src="" alt="preview">
+                </div>
+
+                <button type="submit" class="btn-analyze" id="btn-analyze">Analyser le ticket</button>
+            </form>
+
+            <div id="loader" class="loader htmx-indicator">Analyse en cours...</div>
+        </div>
+
+        <div id="form-container"></div>
+        <div id="confirmation-container"></div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
